@@ -6,7 +6,7 @@ using namespace std;
 #define ff first
 #define ss second
 #define PI 3.141592653589793238462
-#ifndef ONLINE_JUDGE
+#ifdef JAI_SHREE_KRISHNA
 #define dbg(x) cerr << #x << " : "; _print_(x);cerr << "\n";
 #else
 #define dbg(x)
@@ -36,12 +36,28 @@ template <class T> void _print_(set <T> v) {cerr << "[ "; for (T i : v) {_print_
 template <class T> void _print_(multiset <T> v) {cerr << "[ "; for (T i : v) {_print_(i); cerr << " ";} cerr << "]";}
 template <class T, class V> void _print_(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print_(i); cerr << " ";} cerr << "]";}
 
-const ll mod = 1e11 + 7;
-const int N = 1e6 + 1;
 
-void precompute(){
-    
-}
+// Operator overloads
+template<typename T1, typename T2> // cin >> pair<T1, T2>
+istream& operator>>(istream &istream, pair<T1, T2> &p) { return (istream >> p.first >> p.second); }
+template<typename T> // cin >> vector<T>
+istream& operator>>(istream &istream, vector<T> &v){for (auto &it : v)cin >> it;return istream;}
+template<typename T1, typename T2> // cout << pair<T1, T2>
+ostream& operator<<(ostream &ostream, const pair<T1, T2> &p) { return (ostream << p.first << " " << p.second); }
+template<typename T> // cout << vector<T>
+ostream& operator<<(ostream &ostream, const vector<T> &c) { for (auto &it : c) cout << it << " "; return ostream; }
+
+const ll mod = 1e18;
+const ll eps = 1e-9;
+const ll inf = 1e18;
+const int MAXN = 1e6 + 1;
+
+int dx[] = {0, 1, 0, -1, 1, 1, -1, -1};
+int dy[] = {1, 0, -1, 0, 1, -1, 1, -1};
+
+/**************************** --- Add Global Variables & Functions --- ****************************/
+ll num[19];
+/**************************** ---------------------------------------- ****************************/
 ll binpow(ll a, ll b, ll p = mod){
     ll res = 1;
     while (b > 0){
@@ -51,31 +67,52 @@ ll binpow(ll a, ll b, ll p = mod){
     }
     return res;
 }
-void solve(){
-    ll n;
-    cin>>n;
-    ll exp = 1;
-    ll end = 9;
-    while(n>end){
-        n-=end;
-        exp++;
-        end = 9*binpow(10,exp-1)*exp;
+void precompute(){
+    num[0] = 0;
+    ll pow = 1;
+    for(int i = 1;i < 19;i++){
+        num[i] = num[i-1] + 9*pow*i;
+        pow*=10;
     }
-    n--;
-    ll num = n/exp;
-    ll digit = n%exp;
-    ll ans = binpow(10,exp-1)+num;
-
-    string s = to_string(ans);
-    cout<<s[digit]<<endl;
+}
+void solve(){
+    ll n,m,k,q;
+    string yes = "YES\n",no = "NO\n";
+    // for(int i = 0;i < 18;i++){
+    //     cout<<num[i]<<" ";
+    // }cout<<"\n";
+    cin>>n;
+    ll sum = 0;
+    int l = 0;
+    for(int i = 1;i<19;i++){
+        if(n-num[i] <= 0){
+            l = i;
+            break;
+        }
+    }
+    dbg(l)
+    dbg(num[l])
+    
+    ll diff = n - num[l-1]-1;
+    ll number = binpow(10,l-1) + diff/l;
+    // cout<<"number = "<<number<<endl;
+    dbg(diff)
+    dbg(number)
+    // dbg(diff%l)
+    ll remainder = diff%l;
+    dbg(remainder)
+    int digit = to_string(number)[remainder] - '0';
+    cout<<digit<<endl;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    #ifndef ONLINE_JUDGE
+    #ifdef JAI_SHREE_KRISHNA
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
+    #endif
+    #ifdef ERROR
     freopen("error.txt","w",stderr);
     #endif
     ll testcases=1;

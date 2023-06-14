@@ -6,7 +6,7 @@ using namespace std;
 #define ff first
 #define ss second
 #define PI 3.141592653589793238462
-#ifndef ONLINE_JUDGE
+#ifdef JAI_SHREE_KRISHNA
 #define dbg(x) cerr << #x << " : "; _print_(x);cerr << "\n";
 #else
 #define dbg(x)
@@ -36,84 +36,93 @@ template <class T> void _print_(set <T> v) {cerr << "[ "; for (T i : v) {_print_
 template <class T> void _print_(multiset <T> v) {cerr << "[ "; for (T i : v) {_print_(i); cerr << " ";} cerr << "]";}
 template <class T, class V> void _print_(map <T, V> v) {cerr << "[ "; for (auto i : v) {_print_(i); cerr << " ";} cerr << "]";}
 
-const ll mod = 1e9 + 7;
-const int N = 1e6 + 1;
+
+// Operator overloads
+template<typename T1, typename T2> // cin >> pair<T1, T2>
+istream& operator>>(istream &istream, pair<T1, T2> &p) { return (istream >> p.first >> p.second); }
+template<typename T> // cin >> vector<T>
+istream& operator>>(istream &istream, vector<T> &v){for (auto &it : v)cin >> it;return istream;}
+template<typename T1, typename T2> // cout << pair<T1, T2>
+ostream& operator<<(ostream &ostream, const pair<T1, T2> &p) { return (ostream << p.first << " " << p.second); }
+template<typename T> // cout << vector<T>
+ostream& operator<<(ostream &ostream, const vector<T> &c) { for (auto &it : c) cout << it << " "; return ostream; }
+
+const ll mod = 1000000007;
+const ll eps = 1e-9;
+const ll inf = 1e18;
+const int MAXN = 1e6 + 1;
+
+int dx[] = {-1, 0, 1, 0};
+int dy[] = {0, 1, 0, -1};
+
+/**************************** --- Add Global Variables & Functions --- ****************************/
 string s;
-int cnt = 0;
-
-int dx[] = {-1,0,1,0};
-int dy[] = {0,1,0,-1};
-
-bool vis[7][7] = {0};
+int len = 48;
+bool vis[9][9] = {0};
+int p[48];
+/**************************** ---------------------------------------- ****************************/
 
 void precompute(){
     
 }
-bool isSafe(int x, int y){
-    if(x>=0 && x<7 && y>=0 && y<7 && vis[x][y] == 0){
-        return true;
-    }
-    return false;
-}
-void rec(int x, int y, int tx, int ty, int len){
-    if(x == tx && y == ty){
-        cnt++;
-        return;
-    }
-    if(len>=s.length()) return;
-    dbg(x)
-    dbg(y)
-    vis[x][y] = 1;
+ll traverse(int i,int r,int c){
+    if(vis[r][c+1] && vis[r][c-1] && (!vis[r+1][c] && !vis[r-1][c])) return 0;
+    if((!vis[r][c+1] && !vis[r][c-1]) && vis[r+1][c] && vis[r-1][c]) return 0;
     
-    int newx,newy;
-    if(s[len] == 'U'){
-        newx = x+dx[0];
-        newy = x+dy[0];
-        if(isSafe(newx,newy))
-            rec(newx,newy,tx,ty,len+1);
+    if(r == 7 && c == 1){
+        return i==len?1:0;
     }
-    else if(s[len] == 'R'){
-        newx = x+dx[1];
-        newy = x+dy[1];
-        if(isSafe(newx,newy))
-            rec(newx,newy,tx,ty,len+1);
-    }
-    else if(s[len] == 'D'){
-        newx = x+dx[2];
-        newy = x+dy[2];
-        if(isSafe(newx,newy))
-            rec(newx,newy,tx,ty,len+1);
-    }
-    else if(s[len] == 'L'){
-        newx = x+dx[3];
-        newy = x+dy[3];
-        if(isSafe(newx,newy))
-            rec(newx,newy,tx,ty,len+1);
+    if(i==len) return 0;
+    
+    ll ans = 0;
+    vis[r][c] = 1;
+    
+    if(p[i]<4){
+        int m = p[i];
+        int x = r + dx[m];
+        int y = c + dy[m];
+        if(!vis[x][y]) ans+=traverse(i+1,x,y);
     }
     else{
-        for (int i = 0; i < 4; i++){
-            newx = x+dx[i];
-            newy = x+dy[i];
-            if(isSafe(newx,newy))
-                rec(newx,newy,tx,ty,len+1);
+        for(int m = 0;m < 4;m++){
+            int x = r + dx[m];
+            int y = c + dy[m];
+            if(!vis[x][y]) ans+=traverse(i+1,x,y);
         }
     }
-    vis[x][y] = 0;
+    
+    vis[r][c] = 0;
+    return ans;
 }
 void solve(){
+    ll n,m,k,q;
+    string yes = "YES\n",no = "NO\n";
     cin>>s;
-    int len = 0;
-    // string path = "";
-    rec(0,0,6,0,len);
-    cout<<cnt<<endl;
+    for(int i = 0;i < len;i++){
+        if(s[i] == 'U') p[i] = 0;
+        else if(s[i] == 'R') p[i] = 1;
+        else if(s[i] == 'D') p[i] = 2;
+        else if(s[i] == 'L') p[i] = 3;
+        else p[i] = 4;
+    }
+    for(int i = 0;i < 9;i++){
+        vis[i][0] = 1;
+        vis[i][8] = 1;
+        vis[0][i] = 1;
+        vis[8][i] = 1;
+    }
+    ll ans = traverse(0,1,1);
+    cout<<ans<<endl;
 }
 
 int main() {
     ios_base::sync_with_stdio(false);
     cin.tie(NULL);
-    #ifndef ONLINE_JUDGE
+    #ifdef JAI_SHREE_KRISHNA
     freopen("input.txt","r",stdin);
     freopen("output.txt","w",stdout);
+    #endif
+    #ifdef ERROR
     freopen("error.txt","w",stderr);
     #endif
     ll testcases=1;
